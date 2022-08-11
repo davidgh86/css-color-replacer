@@ -11,6 +11,7 @@
       </div>
       <div class="button-containter">
         <button type="button" @click="transformCSS">Click Me!</button>
+        <ColorPicker alpha-channel="hide"></ColorPicker>
       </div>
       <div class="output-containter">
         <textarea v-model="replacedColors" placeholder="output css"></textarea>
@@ -75,9 +76,14 @@ import {
   toHex,
 } from "../services/color";
 import { v4 as uuidv4 } from "uuid";
+import { ColorPicker } from "vue-accessible-color-picker";
+//import { ColorPicker } from "vue-accessible-color-picker/unstyled";
 
 export default {
   name: "HelloWorld",
+  components: {
+    ColorPicker,
+  },
   data() {
     return {
       colors: [],
