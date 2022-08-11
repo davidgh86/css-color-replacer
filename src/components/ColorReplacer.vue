@@ -16,6 +16,9 @@
         <textarea v-model="replacedColors" placeholder="output css"></textarea>
       </div>
     </div>
+    <div class="wrapper">
+      <color-picker v-bind="c" @input="onInput"></color-picker>
+    </div>
     <div v-for="(color, index) in colors" :key="index">
       <div class="wrapper">
         <div
@@ -65,6 +68,8 @@
 </template>
 
 <script>
+import ColorPicker from "@radial-color-picker/vue-color-picker";
+
 import { debounce } from "lodash";
 import {
   //obtainHEXValues,
@@ -78,6 +83,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "HelloWorld",
+  components: { ColorPicker },
   data() {
     return {
       colors: [],
@@ -85,11 +91,37 @@ export default {
       useTransparences: false,
       inputCss: "",
       replacedColors: "",
+      color: {
+        hue: 50,
+        saturation: 100,
+        luminosity: 50,
+        alpha: 1,
+      },
+      colorrrr: "#59c7f9",
+      suckerCanvas: null,
+      suckerArea: [],
+      isSucking: false,
     };
   },
   mounted() {},
   watch: {},
   methods: {
+    onInput(hue) {
+      this.color.hue = hue;
+    },
+    changeColor(color) {
+      const { r, g, b, a } = color.rgba;
+      this.color = `rgba(${r}, ${g}, ${b}, ${a})`;
+    },
+    openSucker(isOpen) {
+      if (isOpen) {
+        // ... canvas be created
+        // this.suckerCanvas = canvas
+        // this.suckerArea = [x1, y1, x2, y2]
+      } else {
+        // this.suckerCanvas && this.suckerCanvas.remove
+      }
+    },
     updateInputCss: debounce(function () {
       this.initializeModelColorMap();
       this.updateColorsCache();
@@ -200,6 +232,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+@import "~@radial-color-picker/vue-color-picker/dist/vue-color-picker.min.css";
 textarea {
   height: 100%;
   width: 100%;
