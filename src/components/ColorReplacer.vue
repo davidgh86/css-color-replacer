@@ -11,7 +11,12 @@
       </div>
       <div class="button-containter">
         <button type="button" @click="transformCSS">Click Me!</button>
-        <ColorPicker alpha-channel="hide"></ColorPicker>
+        <!-- <ColorPicker
+          alpha-channel="hide"
+          :visible-formats="['rgb']"
+          :default-format="'rgb'"
+          @color-change="colorChange($event, 23)"
+        ></ColorPicker> -->
       </div>
       <div class="output-containter">
         <textarea v-model="replacedColors" placeholder="output css"></textarea>
@@ -32,7 +37,16 @@
           <div>
             {{ color.colorDest }} | {{ rgbStrintoHex(color.colorDest) }}
           </div>
-          <div><input type="text" v-model="color.colorDest" /></div>
+          <div>
+            <!-- <input type="text" v-model="color.colorDest" /> -->
+            <ColorPicker
+              :color="'rgb(' + color.colorDest + ')'"
+              alpha-channel="hide"
+              :visible-formats="['rgb']"
+              :default-format="'rgb'"
+              @color-change="colorChange($event, index)"
+            ></ColorPicker>
+          </div>
         </div>
       </div>
       <div v-if="useTransparences && color.transparencies">
@@ -100,6 +114,15 @@ export default {
       this.initializeModelColorMap();
       this.updateColorsCache();
     }, 2000),
+    colorChange: function (eventData, colorIndex) {
+      const value =
+        parseInt(eventData.colors.rgb.r * 255) +
+        ", " +
+        parseInt(eventData.colors.rgb.g * 255) +
+        ", " +
+        parseInt(eventData.colors.rgb.b * 255);
+      this.colors[colorIndex].colorDest = value;
+    },
     initializeModelColorMap: function () {
       const result = [];
       const auxMap = new Map();
