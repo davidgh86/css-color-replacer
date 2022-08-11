@@ -3,7 +3,11 @@
     Usar transparencias <input type="checkbox" v-model="useTransparences" />
     <div class="wrapper">
       <div class="one">
-        <textarea v-model="inputCss" placeholder="input css"></textarea>
+        <textarea
+          v-model="inputCss"
+          @input="updateInputCss"
+          placeholder="input css"
+        ></textarea>
       </div>
       <div class="two">
         <textarea v-model="replaceColors" placeholder="output css"></textarea>
@@ -56,6 +60,9 @@
 </template>
 
 <script>
+import { debounce } from "lodash";
+//import hexToInt from "../services/color";
+
 export default {
   name: "HelloWorld",
   data() {
@@ -69,14 +76,21 @@ export default {
   },
   mounted() {},
   watch: {
-    // think add button functionality instead of watcher
-    inputCss() {
-      // newInputCss, oldInputCss
-      this.colors = this.initializeModelColorMap();
-      this.updateColorsCache();
-    },
+    // inputCss() {
+    //   debounce(() => {
+    //     alert("dfsa");
+    //   }, 2000);
+    // },
   },
   methods: {
+    // updateInputCss: _.debounce(() => {
+    //   this.colors = this.initializeModelColorMap();
+    //   this.updateColorsCache();
+    // }, 2000),
+    updateInputCss: debounce(function () {
+      this.initializeModelColorMap();
+      this.updateColorsCache();
+    }, 2000),
     initializeModelColorMap: function () {
       const result = [];
       const auxMap = new Map();
@@ -121,11 +135,11 @@ export default {
         }
         result.push(resultData);
       }
-      return result;
+      this.colors = result;
     },
     updateColorsCache: function () {
       for (const historyColor of this.colors) {
-        this.colorsCache.set(historyColor.colorOrig);
+        this.colorsCache.set(historyColor.colorOrig, historyColor);
       }
     },
     componentToHex: function (c) {
