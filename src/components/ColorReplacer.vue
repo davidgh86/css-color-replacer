@@ -10,14 +10,19 @@
         ></textarea>
       </div>
       <div class="button-containter">
-        <button type="button" @click="transformCSS">Click Me!</button>
-        <dialog id="dialog" class="dialog">
+        <!--button type="button" @click="transformCSS">Click Me!</button> -->
+        <dialog id="dialog" class="dialog" v-bind:style="pickerPosition">
           <form method="dialog">
-            <p>Hi, I'm a dialog. Notice I have a gray overlay behind me?</p>
+            <ColorPicker
+              :color="pickerColor"
+              alpha-channel="hide"
+              :visible-formats="['rgb']"
+              :default-format="'rgb'"
+              @color-change="colorChange"
+            ></ColorPicker>
             <button>OK</button>
           </form>
         </dialog>
-        <button onclick="dialog.showModal()">Open Dialog</button>
       </div>
       <div class="output-containter">
         <textarea v-model="replacedColors" placeholder="output css"></textarea>
@@ -40,13 +45,12 @@
           </div>
           <div>
             <!-- <input type="text" v-model="color.colorDest" /> -->
-            <ColorPicker
-              :color="'rgb(' + color.colorDest + ')'"
-              alpha-channel="hide"
-              :visible-formats="['rgb']"
-              :default-format="'rgb'"
-              @color-change="colorChange($event, index)"
-            ></ColorPicker>
+            <button
+              onclick="dialog.showModal()"
+              @click="initColorPicker(index)"
+            >
+              Open Dialog
+            </button>
           </div>
         </div>
       </div>
@@ -106,6 +110,12 @@ export default {
       useTransparences: false,
       inputCss: "",
       replacedColors: "",
+      pickerPosition: {
+        top: "20px",
+        left: "20px",
+      },
+      pickerColor: "rgb(255, 255, 255)",
+      selectedIndex: 0,
     };
   },
   mounted() {},
@@ -115,14 +125,18 @@ export default {
       this.initializeModelColorMap();
       this.updateColorsCache();
     }, 2000),
-    colorChange: function (eventData, colorIndex) {
+    initColorPicker: function (idx) {
+      this.selectedIndex = idx;
+      this.pickerColor = `rgb(${this.colors[idx].colorDest})`;
+    },
+    colorChange: function (eventData) {
       const value =
         parseInt(eventData.colors.rgb.r * 255) +
         ", " +
         parseInt(eventData.colors.rgb.g * 255) +
         ", " +
         parseInt(eventData.colors.rgb.b * 255);
-      this.colors[colorIndex].colorDest = value;
+      this.colors[this.selectedIndex].colorDest = value;
     },
     initializeModelColorMap: function () {
       const result = [];
@@ -272,8 +286,6 @@ dialog {
   padding: 1.6rem;
   max-width: 400px;
   position: absolute;
-  top: 10%;
-  left: 50%;
   margin: 0 0 0 0px;
 }
 
