@@ -11,12 +11,13 @@
       </div>
       <div class="button-containter">
         <button type="button" @click="transformCSS">Click Me!</button>
-        <!-- <ColorPicker
-          alpha-channel="hide"
-          :visible-formats="['rgb']"
-          :default-format="'rgb'"
-          @color-change="colorChange($event, 23)"
-        ></ColorPicker> -->
+        <dialog id="dialog" class="dialog">
+          <form method="dialog">
+            <p>Hi, I'm a dialog. Notice I have a gray overlay behind me?</p>
+            <button>OK</button>
+          </form>
+        </dialog>
+        <button onclick="dialog.showModal()">Open Dialog</button>
       </div>
       <div class="output-containter">
         <textarea v-model="replacedColors" placeholder="output css"></textarea>
@@ -248,6 +249,7 @@ textarea {
   grid-gap: 10px;
   grid-auto-rows: minmax(100px, auto);
 }
+
 .one {
   grid-column: 1;
 }
@@ -262,5 +264,20 @@ textarea {
 }
 .output-containter {
   grid-column: 8 / 13;
+}
+
+dialog {
+  border: none !important;
+  box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 1.6rem;
+  max-width: 400px;
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  margin: 0 0 0 0px;
+}
+
+::backdrop {
+  background-color: rgb(255, 255, 255, 6%);
 }
 </style>

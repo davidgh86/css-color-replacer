@@ -13,7 +13,8 @@
     "lodash": "^4.17.21",
     "uuid": "^8.3.2",
     "vue": "^3.2.13",
-    "vue-accessible-color-picker": "^4.0.4"
+    "vue-accessible-color-picker": "^4.0.4",
+    "vue3-promise-dialog": "^0.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
