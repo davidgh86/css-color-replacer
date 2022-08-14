@@ -11,12 +11,14 @@
   "dependencies": {
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "css-tree": "^2.2.0",
+    "cssom": "^0.5.0",
     "html-resources": "^1.1.2",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2",
     "vue": "^3.2.13",
-    "vue-axios": "^3.4.1",
     "vue-accessible-color-picker": "^4.0.4",
+    "vue-axios": "^3.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

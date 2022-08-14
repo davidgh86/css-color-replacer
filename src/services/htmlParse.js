@@ -1,4 +1,5 @@
 import parser from "@/services/client";
+import ccsom from "cssom";
 
 const elementAttributes = ["src", "href"];
 
@@ -7,6 +8,7 @@ export function parse(html, hostname) {
   console.log(html, url);
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
+  groupPosibleStylesInHeader(doc);
   for (const elementAttribute of elementAttributes) {
     const elementsLinkReplaceable = getElementsByAtributeSelector(
       doc,
@@ -18,6 +20,58 @@ export function parse(html, hostname) {
   for (const linkElement of linkElements) {
     replaceStyleContent(linkElement, doc);
   }
+  groupPosibleStylesInHeader(doc);
+  const styles = doc.getElementsByTagName("style")[0].innerHTML;
+  filterNonAppliedStyles(doc, styles);
+  return doc;
+}
+
+function isRuleApplied(element, selector) {
+  if (typeof element.matches == "function") return element.matches(selector);
+
+  if (typeof element.matchesSelector == "function")
+    return element.matchesSelector(selector);
+
+  var matches = (element.document || element.ownerDocument).querySelectorAll(
+    selector
+  );
+  var i = 0;
+
+  while (matches[i] && matches[i] !== element) i++;
+
+  return matches[i] ? true : false;
+}
+
+function filterNonAppliedStyles(htmlDoc, styles) {
+  const a = ccsom.parse(styles);
+  const allElemetns = htmlDoc.body.getElementsByTagName("*");
+
+  let result = "";
+
+  for (let i = 0; i < a.cssRules.length; i++) {
+    const rule = a.cssRules[i];
+    for (const el of allElemetns) {
+      if (isRuleApplied(el, rule.selectorText)) {
+        result += rule.cssText;
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+function groupPosibleStylesInHeader(htmlDoc) {
+  let cssStyle = "";
+  const styleTags = htmlDoc.getElementsByTagName("style");
+  for (const styleTag of styleTags) {
+    cssStyle += styleTag.innerHTML;
+    styleTag.remove();
+  }
+  const uniqStyleElement = htmlDoc.createElement("style");
+  const cssContentTextNode = htmlDoc.createTextNode(cssStyle);
+  uniqStyleElement.appendChild(cssContentTextNode);
+  htmlDoc.head.appendChild(uniqStyleElement);
 }
 
 function replaceStyleContent(linkElement, doc) {
@@ -79,3 +133,19 @@ function getResourceFullUri(src, hostName) {
   // "https://finofilipino.org/wp-content/uploads/2020/12/logofinofilipino.png"
   return hostName + src;
 }
+
+// function isRuleApplied(element, selector) {
+//   if (typeof element.matches == "function") return element.matches(selector);
+
+//   if (typeof element.matchesSelector == "function")
+//     return element.matchesSelector(selector);
+
+//   var matches = (element.document || element.ownerDocument).querySelectorAll(
+//     selector
+//   );
+//   var i = 0;
+
+//   while (matches[i] && matches[i] !== element) i++;
+
+//   return matches[i] ? true : false;
+// }

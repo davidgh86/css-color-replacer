@@ -5,11 +5,10 @@
 <script>
 import HtmlColorReplacer from "./components/HtmlColorReplacer.vue";
 
-
 export default {
   name: "App",
   components: {
-    HtmlColorReplacer
+    HtmlColorReplacer,
   },
 };
 </script>
