@@ -11,6 +11,18 @@
       </div>
       <div class="button-containter">
         <button type="button" @click="transformCSS">Click Me!</button>
+        <dialog id="dialog" class="dialog" v-bind:style="pickerInfo.position">
+          <form method="dialog">
+            <ColorPicker
+              :color="pickerInfo.color"
+              alpha-channel="hide"
+              :visible-formats="['rgb']"
+              :default-format="'rgb'"
+              @color-change="colorChange"
+            ></ColorPicker>
+            <button>OK</button>
+          </form>
+        </dialog>
       </div>
       <div class="output-containter">
         <textarea v-model="replacedColors" placeholder="output css"></textarea>
@@ -31,7 +43,15 @@
           <div>
             {{ color.colorDest }} | {{ rgbStrintoHex(color.colorDest) }}
           </div>
-          <div><input type="text" v-model="color.colorDest" /></div>
+          <div>
+            <!-- <input type="text" v-model="color.colorDest" /> -->
+            <button
+              onclick="dialog.showModal()"
+              @click="initColorPicker($event, index)"
+            >
+              Open Dialog
+            </button>
+          </div>
         </div>
       </div>
       <div v-if="useTransparences && color.transparencies">
@@ -75,25 +95,61 @@ import {
   toHex,
 } from "../services/color";
 import { v4 as uuidv4 } from "uuid";
+import { ColorPicker } from "vue-accessible-color-picker";
+//import { ColorPicker } from "vue-accessible-color-picker/unstyled";
 
 export default {
   name: "ColorReplacer",
+  components: {
+    ColorPicker,
+  },
+  props: {
+    cssText: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
+      inputCss: "",
       colors: [],
       colorsCache: new Map(),
       useTransparences: false,
-      inputCss: "",
       replacedColors: "",
+      pickerInfo: {
+        position: {
+          top: "0px",
+          left: "0px",
+        },
+        color: "rgb(255, 255, 255)",
+        selectedIndex: 0,
+      },
     };
   },
-  mounted() {},
+  mounted() {
+    this.inputCss = this.cssText;
+  },
   watch: {},
   methods: {
     updateInputCss: debounce(function () {
       this.initializeModelColorMap();
       this.updateColorsCache();
     }, 2000),
+    initColorPicker: function (event, idx) {
+      this.pickerInfo.position.top = event.clientY + "px";
+      this.pickerInfo.position.left = event.clientX + "px";
+      this.pickerInfo.selectedIndex = idx;
+      this.pickerInfo.color = `rgb(${this.colors[idx].colorDest})`;
+    },
+    colorChange: function (eventData) {
+      const value =
+        parseInt(eventData.colors.rgb.r * 255) +
+        ", " +
+        parseInt(eventData.colors.rgb.g * 255) +
+        ", " +
+        parseInt(eventData.colors.rgb.b * 255);
+      this.colors[this.pickerInfo.selectedIndex].colorDest = value;
+    },
     initializeModelColorMap: function () {
       const result = [];
       const auxMap = new Map();
@@ -184,7 +240,8 @@ export default {
         resultantCss = resultantCss.replaceAll(key, newColorValue);
       }
 
-      return resultantCss.replaceAll(uuid, "");
+      const result = resultantCss.replaceAll(uuid, "");
+      return result;
     },
     rgbStrintoHex: function (s) {
       return toHex(s);
@@ -193,6 +250,7 @@ export default {
       const allColors = obtainAllColors(this.inputCss);
       const replacedCss = this.replaceAllColors(this.inputCss, allColors);
       this.replacedColors = replacedCss;
+      this.$emit("cssReplaced", replacedCss);
     },
   },
 };
@@ -211,14 +269,15 @@ textarea {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-gap: 10px;
-  grid-auto-rows: minmax(100px, auto);
+  grid-auto-rows: minmax(2rem, auto);
 }
 .wrapper {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 10px;
-  grid-auto-rows: minmax(100px, auto);
+  grid-auto-rows: minmax(2rem, auto);
 }
+
 .one {
   grid-column: 1;
 }
@@ -233,5 +292,18 @@ textarea {
 }
 .output-containter {
   grid-column: 8 / 13;
+}
+
+dialog {
+  border: none !important;
+  box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  padding: 1.6rem;
+  max-width: 400px;
+  position: absolute;
+  margin: 0 0 0 0px;
+}
+
+::backdrop {
+  background-color: rgb(255, 255, 255, 0%);
 }
 </style>

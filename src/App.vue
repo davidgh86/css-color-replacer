@@ -1,17 +1,15 @@
 <template>
-  <HTMLParse />
-  <ColorReplacer />
+  <HtmlColorReplacer />
 </template>
 
 <script>
-import ColorReplacer from "./components/ColorReplacer.vue";
-import HTMLParse from "./components/HTMLParse.vue";
+import HtmlColorReplacer from "./components/HtmlColorReplacer.vue";
+
 
 export default {
   name: "App",
   components: {
-    ColorReplacer,
-    HTMLParse,
+    HtmlColorReplacer
   },
 };
 </script>
