@@ -1,4 +1,4 @@
-import parser from "@/services/client";
+import { getUrlContent } from "@/services/client";
 import ccsom from "cssom";
 
 const elementAttributes = ["src", "href"];
@@ -85,7 +85,7 @@ function replaceStyleContent(linkElement, doc) {
 
 function getElementStyle(linkUrl, doc) {
   const el = doc.createElement("style");
-  el.innerHTML = parser.getUrlContent(linkUrl);
+  el.innerHTML = getUrlContent(linkUrl);
   return el;
 }
 
