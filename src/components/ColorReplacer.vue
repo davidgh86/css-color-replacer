@@ -10,7 +10,7 @@
         ></textarea>
       </div>
       <div class="button-containter">
-        <!--button type="button" @click="transformCSS">Click Me!</button> -->
+        <button type="button" @click="transformCSS">Click Me!</button>
         <dialog id="dialog" class="dialog" v-bind:style="pickerInfo.position">
           <form method="dialog">
             <ColorPicker
@@ -103,12 +103,18 @@ export default {
   components: {
     ColorPicker,
   },
+  props: {
+    cssText: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
+      inputCss: "",
       colors: [],
       colorsCache: new Map(),
       useTransparences: false,
-      inputCss: "",
       replacedColors: "",
       pickerInfo: {
         position: {
@@ -120,7 +126,9 @@ export default {
       },
     };
   },
-  mounted() {},
+  mounted() {
+    this.inputCss = this.cssText;
+  },
   watch: {},
   methods: {
     updateInputCss: debounce(function () {
@@ -232,7 +240,8 @@ export default {
         resultantCss = resultantCss.replaceAll(key, newColorValue);
       }
 
-      return resultantCss.replaceAll(uuid, "");
+      const result = resultantCss.replaceAll(uuid, "");
+      return result;
     },
     rgbStrintoHex: function (s) {
       return toHex(s);
@@ -241,6 +250,7 @@ export default {
       const allColors = obtainAllColors(this.inputCss);
       const replacedCss = this.replaceAllColors(this.inputCss, allColors);
       this.replacedColors = replacedCss;
+      this.$emit("cssReplaced", replacedCss);
     },
   },
 };
