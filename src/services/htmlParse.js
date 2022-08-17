@@ -51,7 +51,14 @@ function filterNonAppliedStyles(htmlDoc, styles) {
   for (let i = 0; i < a.cssRules.length; i++) {
     const rule = a.cssRules[i];
     for (const el of allElemetns) {
-      if (isRuleApplied(el, rule.selectorText)) {
+      let ruleApplied;
+      try {
+        ruleApplied = isRuleApplied(el, rule.selectorText);
+      } catch (e) {
+        // if checking if rule applied fails assume it could be true
+        ruleApplied = true;
+      }
+      if (ruleApplied) {
         result += rule.cssText;
         break;
       }
