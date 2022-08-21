@@ -1,7 +1,7 @@
 import * as ShadyCSS from "@webcomponents/shadycss";
 
 const template = document.createElement("template");
-template.innerHTML = `<iframe frameborder="0" id="iframeResult" name="iframeResult" allowfullscreen="true"></iframe>`;
+template.innerHTML = `<div></div>`;
 
 ShadyCSS.prepareTemplate(template, "native-generic-element");
 
@@ -13,7 +13,7 @@ class NativeGenericElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    //this.shadowRoot.appendChild(template.content.cloneNode(true));
   }
 
   connectedCallback() {
@@ -36,8 +36,8 @@ class NativeGenericElement extends HTMLElement {
   attributeChangedCallback(nameAtr, oldValue, newValue) {
     switch (nameAtr) {
       case "content":
-        this.shadowRoot.getElementById("iframeResult").innerHTML = newValue;
-        //ShadyCSS.styleElement(this);
+        this.shadowRoot.innerHTML = newValue;
+        ShadyCSS.styleElement(this);
         break;
     }
   }
