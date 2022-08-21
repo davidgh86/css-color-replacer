@@ -10,7 +10,7 @@
         ></textarea>
       </div>
       <div class="button-containter">
-        <button type="button" @click="transformCSS">Click Me!</button>
+        <button type="button" @click="transformCSS">Replace colors</button>
         <dialog id="dialog" class="dialog" v-bind:style="pickerInfo.position">
           <form method="dialog">
             <ColorPicker

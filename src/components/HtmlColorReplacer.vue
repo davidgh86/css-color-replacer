@@ -2,7 +2,7 @@
   <div>
     <div><input type="text" v-model="htmlUrl" /></div>
     <div>
-      <button type="button" @click="updateUrlContent($event)">Click Me!</button>
+      <button type="button" @click="updateUrlContent($event)">Load url</button>
     </div>
     <div class="html-content-parent">
       <FullHtmlRenderer
@@ -13,11 +13,11 @@
       />
       <FullHtmlRenderer
         class="html-content-dest"
-        :content="urlContent"
+        :content="urlDestContent"
         :scale="scale"
       />
     </div>
-    <ColorReplacer :cssText="cssText" />
+    <ColorReplacer :cssText="cssText" @cssReplaced="updateDestContent" />
   </div>
 </template>
 
@@ -26,6 +26,7 @@ import { ref } from "vue";
 import ColorReplacer from "./ColorReplacer.vue";
 import FullHtmlRenderer from "./FullHtmlRenderer.vue";
 import { getUrlContent } from "@/services/client";
+import { parse } from "@/services/htmlParse";
 
 export default {
   name: "HtmlColorReplacer",
@@ -39,6 +40,7 @@ export default {
     const htmlContent = ref("");
     const scale = ref(1);
     const urlContent = ref(``);
+    const urlDestContent = ref(``);
     const updateUrlContent = () => {
       getUrlContent(htmlUrl.value)
         .then((content) => {
@@ -48,15 +50,23 @@ export default {
     };
     const loadedSrc = () => {
       cssText.value = urlContent.value;
+      // TODO get hostname
+      const htmlElement = parse(urlContent.value, "https://finofilipino.org");
+      urlDestContent.value = new XMLSerializer().serializeToString(htmlElement);
+    };
+    const updateDestContent = (replacedColorsCode) => {
+      urlDestContent.value = replacedColorsCode;
     };
     return {
       htmlContent,
       urlContent,
+      urlDestContent,
       updateUrlContent,
       scale,
       htmlUrl,
       loadedSrc,
       cssText,
+      updateDestContent,
     };
   },
 };
