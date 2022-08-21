@@ -1,97 +1,75 @@
 <template>
   <div>
-    <div><input type="text" v-model="htmlContent" /></div>
+    <div><input type="text" v-model="htmlUrl" /></div>
     <div>
       <button type="button" @click="updateUrlContent($event)">Click Me!</button>
     </div>
-    <div class="container">
-      <iframe :src="srcIFrame" class="frame" frameborder="0"></iframe>
+    <div class="html-content-parent">
+      <FullHtmlRenderer
+        class="html-content-src"
+        :content="urlContent"
+        :scale="scale"
+        @load="loadedSrc()"
+      />
+      <FullHtmlRenderer
+        class="html-content-dest"
+        :content="urlContent"
+        :scale="scale"
+      />
     </div>
-    <ColorReplacer />
+    <ColorReplacer :cssText="cssText" />
   </div>
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import ColorReplacer from "./ColorReplacer.vue";
-import { fromByteArray } from "base64-js/index";
+import FullHtmlRenderer from "./FullHtmlRenderer.vue";
+import { getUrlContent } from "@/services/client";
 
 export default {
   name: "HtmlColorReplacer",
   components: {
     ColorReplacer,
+    FullHtmlRenderer,
   },
   setup() {
+    const cssText = ref("");
+    const htmlUrl = ref("");
     const htmlContent = ref("");
-    const urlContent = ref(
-      `<!DOCTYPE html>
-<html>
-<head>
-<style>
-body {
-  background-color: lightblue;
-}
-
-h1 {
-  color: white;
-  text-align: center;
-}
-
-p {
-  font-family: verdana;
-  font-size: 20px;
-}
-</style>
-</head>
-<body>
-
-<h1>My First CSS Example</h1>
-<p>This is a paragraph.</p>
-
-</body>
-</html>`
-    );
-    const srcIFrame = computed(() => {
-      const utf8Encode = new TextEncoder();
-      const byteArray = utf8Encode.encode(urlContent.value);
-      const dat = fromByteArray(byteArray);
-      return `data:text/html;base64,${dat}`;
-    });
+    const scale = ref(1);
+    const urlContent = ref(``);
     const updateUrlContent = () => {
-      // getUrlContent(htmlContent.value).then((content) => {
-      //   urlContent.value = content;
-      // });
-      urlContent.value =
-        "<div><style>.afs{background-color: red;}</style><div class='afs'>hola</div></div>";
-      // document
-      //   .querySelector("native-hello-world.uno")
-      //   .setAttribute("css", urlContent.value);
-      //urlContent.value = `adfsfdasf`;
+      getUrlContent(htmlUrl.value)
+        .then((content) => {
+          urlContent.value = content;
+        })
+        .catch((error) => alert(error));
+    };
+    const loadedSrc = () => {
+      cssText.value = urlContent.value;
     };
     return {
       htmlContent,
       urlContent,
       updateUrlContent,
-      srcIFrame,
+      scale,
+      htmlUrl,
+      loadedSrc,
+      cssText,
     };
   },
 };
 </script>
-
 <style>
-.container {
-  width: calc(1777px * 0.55);
-  height: calc(2000px * 0.55);
-  position: relative;
+.html-content-parent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
-
-.frame {
-  width: 1777px;
-  height: 2000px;
-  transform: scale(0.55);
-  transform-origin: 0 0;
-  position: absolute;
-  left: 0;
-  top: 0;
+.html-content-src {
+  grid-column: 1;
+}
+.html-content-dest {
+  grid-column: 2;
 }
 </style>

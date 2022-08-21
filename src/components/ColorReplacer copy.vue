@@ -5,7 +5,7 @@
       <div class="input-containter">
         <textarea
           v-model="inputCss"
-          @input="updateInputCssDebounced"
+          @input="updateInputCss"
           placeholder="input css"
         ></textarea>
       </div>
@@ -127,20 +127,12 @@ export default {
   mounted() {
     this.inputCss = this.cssText;
   },
-  watch: {
-    cssText(newCssText) {
-      this.inputCss = newCssText;
-      this.updateInputCss();
-    },
-  },
+  watch: {},
   methods: {
-    updateInputCssDebounced: debounce(function () {
-      this.updateInputCss();
-    }, 2000),
-    updateInputCss: function () {
+    updateInputCss: debounce(function () {
       this.initializeModelColorMap();
       this.updateColorsCache();
-    },
+    }, 2000),
     initColorPicker: function (event, idx) {
       this.pickerInfo.position.top = event.clientY + "px";
       this.pickerInfo.position.left = event.clientX + "px";
