@@ -4,8 +4,8 @@
     <div>
       <button type="button" @click="updateUrlContent($event)">Click Me!</button>
     </div>
-    <div>
-      <iframe :src="srcIFrame" sandbox="allow-same-origin"></iframe>
+    <div class="container">
+      <iframe :src="srcIFrame" class="frame" frameborder="0"></iframe>
     </div>
     <ColorReplacer />
   </div>
@@ -78,4 +78,20 @@ p {
 };
 </script>
 
-<style></style>
+<style>
+.container {
+  width: calc(1777px * 0.55);
+  height: calc(2000px * 0.55);
+  position: relative;
+}
+
+.frame {
+  width: 1777px;
+  height: 2000px;
+  transform: scale(0.55);
+  transform-origin: 0 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+</style>
